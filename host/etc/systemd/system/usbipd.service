@@ -1,0 +1,22 @@
+[Unit]
+Description=USB/IP Daemon
+After=network.target
+After=systemd-modules-load.service
+
+[Service]
+Type=simple
+EnvironmentFile=%E/default/usbipd
+ExecStartPre=modprobe usbip_host
+ExecStart=/bin/sh -c '\
+    case "${IP_VERSION:-BOTH}" in \
+        V4)   exec /usr/sbin/usbipd -t ${PORT:-3240} -4 ;; \
+        V6)   exec /usr/sbin/usbipd -t ${PORT:-3240} -6 ;; \
+        BOTH) exec /usr/sbin/usbipd -t ${PORT:-3240} ;; \
+        *)    echo "Invalid IP_VERSION: ${IP_VERSION}"; exit 1 ;; \
+    esac'
+ExecStartPost=udevadm trigger --subsystem-match=usb --action=add
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

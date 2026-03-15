@@ -1,0 +1,8 @@
+# USB/IP Daemon Configuration
+
+# Port (default: 3240)
+# PORT=3240
+
+# IP version binding: V4 | V6 | BOTH (default: BOTH)
+# IP_VERSION=BOTH
+

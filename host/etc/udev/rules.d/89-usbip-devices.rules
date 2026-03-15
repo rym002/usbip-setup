@@ -1,0 +1,5 @@
+# Devices to exclude from usbip binding
+# ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0781", ATTR{idProduct}=="5583", TAG+="usbip_exclude"
+
+# Network interface
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0424", ATTR{idProduct}=="ec00", TAG+="usbip_exclude"

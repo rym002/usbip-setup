@@ -1,0 +1,7 @@
+# Binds usb devices to usbip except excluded
+ACTION=="add", SUBSYSTEM=="usb", \
+  ATTR{bDeviceClass}!="09", \
+  ATTR{idVendor}!="0000", \
+  TAG!="usbip_exclude", \
+  RUN+="/usr/sbin/usbip bind -b %k"
+  
