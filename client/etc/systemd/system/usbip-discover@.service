@@ -1,0 +1,32 @@
+[Unit]
+Description=USB/IP Discovery (%i)
+After=network-online.target
+Wants=network-online.target
+# Instance naming: usbip-discover@<host>:<port>.service
+# Example:         usbip-discover@192.168.6.239:3240.service
+# Enable:          systemctl enable --now usbip-discover@192.168.6.239:3240
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=HOST=%i
+ExecStart=/bin/sh -c '\
+    SERVER=$${HOST%%:*}; \
+    PORT=$${HOST##*:}; \
+    for busid in $$(usbip list -r $$SERVER \
+        | grep -E "^\s+[0-9]+-[0-9]+" \
+        | cut -d: -f1 \
+        | tr -d " "); do \
+        systemctl start usbip-client@$${SERVER}:$${PORT}_$${busid}.service; \
+    done'
+ExecStop=/bin/sh -c '\
+    SERVER=$${HOST%%:*}; \
+    PORT=$${HOST##*:}; \
+    systemctl list-units "usbip-client@$${SERVER}:$${PORT}_*" --no-legend \
+        | cut -f1 \
+        | while read -r unit; do \
+            systemctl stop $$unit; \
+        done'
+
+[Install]
+WantedBy=multi-user.target
