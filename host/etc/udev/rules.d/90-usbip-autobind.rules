@@ -1,7 +1,10 @@
-# Binds usb devices to usbip except excluded
+# Start systemd on device add if not excluded
 ACTION=="add", SUBSYSTEM=="usb", \
   ATTR{bDeviceClass}!="09", \
   ATTR{idVendor}!="0000", \
   TAG!="usbip_exclude", \
-  RUN+="/usr/sbin/usbip bind -b %k"
-  
+  RUN+="/usr/bin/systemctl start usbip-bind@%k"
+
+# Stop on remove
+ACTION=="remove", SUBSYSTEM=="usb", \
+    RUN+="/bin/sh -c 'systemctl is-active usbip-bind@%k && systemctl stop usbip-bind@%k'"

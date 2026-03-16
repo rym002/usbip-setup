@@ -1,0 +1,10 @@
+[Unit]
+Description=USB/IP Bind Device (%i)
+After=usbipd.service
+Requires=usbipd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=usbip bind -b %i
+ExecStop=usbip unbind -b %i
